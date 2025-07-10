@@ -112,7 +112,7 @@ app.post('/qa', (req, res) => {
     // Simple logic to answer questions from your report's screenshot
     const question = q.toLowerCase();
     if (question.includes('ta of this course')) {
-        answer = "Jyothi (Email: jyothi2215@vt.edu) is the GTA (Graduate Teaching Assistant) of this course. Note: GTA is often used interchangeably with TA, but technically GTA stands for Graduate Teaching Assistant.";
+        answer = "Jenny (Email: jennymax@vt.edu) is the GTA (Graduate Teaching Assistant) of this course. Note: GTA is often used interchangeably with TA, but technically GTA stands for Graduate Teaching Assistant.";
     } else if (question.includes('late penalty') || question.includes('late submission')) {
         answer = "Late submissions are penalized by 5% project points for every 12 hours late, up to a maximum of 48 hours late. Project submissions that are 48+ hours past the deadline are not accepted unless explicit permission is given by the instructor.";
     }
