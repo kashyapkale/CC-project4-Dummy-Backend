@@ -1,13 +1,12 @@
 // index.js
 // A simple Express.js server to create dummy APIs for the AI Lecture Assistant project.
+// Updated to match the JSON response format of the original Python QA endpoint.
 
 // --- Setup ---
 // 1. Make sure you have Node.js installed.
-// 2. Create a new folder for your server.
-// 3. Inside the folder, run `npm init -y` to create a package.json file.
-// 4. Run `npm install express cors` to install the required libraries.
-// 5. Create a file named `index.js` and paste this code into it.
-// 6. Run `node index.js` in your terminal to start the server.
+// 2. In your project folder, run `npm install express cors`.
+// 3. Create a file named `index.js` and paste this code into it.
+// 4. Run `node index.js` in your terminal to start the server.
 // The server will be running at http://localhost:8080
 
 const express = require('express');
@@ -22,6 +21,8 @@ const PORT = process.env.PORT || 8080;
 app.use(cors());
 // Enable express to parse raw text bodies, as required by the /uploadTranscript endpoint
 app.use(express.text());
+// Enable express to parse JSON bodies, useful for more complex requests
+app.use(express.json());
 
 
 // --- In-Memory "Database" ---
@@ -30,7 +31,6 @@ let lectures = [
     {
         lecture_id: "10e51729-b2ae-489a-b88e-206e898fab41",
         title: "CloudLecture V8",
-        // In a real app, this would be a real pre-signed URL. Here, it's just a dummy link.
         notes: "https://example.com/notes/cloud-lecture-v8.txt"
     },
     {
@@ -54,7 +54,6 @@ let lectures = [
 // --- API Endpoints ---
 
 // 1. List Available Lectures and Notes
-// Mimics: GET https://4xoppvn7g2.execute-api.us-east-2.amazonaws.com/prod/listLectures
 app.get('/listLectures', (req, res) => {
     console.log(`GET /listLectures - Returning ${lectures.length} lectures.`);
     res.status(200).json({
@@ -63,7 +62,6 @@ app.get('/listLectures', (req, res) => {
 });
 
 // 2. Upload Lecture Transcript
-// Mimics: POST https://b9hgm6nhc2.execute-api.us-east-2.amazonaws.com/prod/uploadTranscript?lectureTitle=<title>
 app.post('/uploadTranscript', (req, res) => {
     const { lectureTitle } = req.query;
     const transcriptText = req.body;
@@ -79,14 +77,11 @@ app.post('/uploadTranscript', (req, res) => {
     const newLecture = {
         lecture_id: crypto.randomUUID(),
         title: lectureTitle,
-        // We'll generate a dummy notes URL. The processing is just simulated.
         notes: `https://example.com/notes/${lectureTitle.replace(/\s+/g, '-')}.txt`
     };
 
-    // Add the new lecture to our in-memory list
     lectures.push(newLecture);
 
-    // Respond with a success message similar to the original API
     res.status(200).json({
         lecture_id: newLecture.lecture_id,
         transcript_uri: `s3://dummy-bucket/transcripts/${newLecture.lecture_id}.txt`,
@@ -96,20 +91,20 @@ app.post('/uploadTranscript', (req, res) => {
 
 
 // 3. Course FAQ Chat Endpoint
-// Mimics: POST https://16ea96uy70.execute-api.us-east-2.amazonaws.com/prod/qa?q=<question>
+// **MODIFIED** to match the original Python Lambda's response format.
 app.post('/qa', (req, res) => {
     const { q } = req.query;
 
     if (!q) {
         console.error('POST /qa - Failed: Missing question.');
-        return res.status(400).json({ message: "Bad Request: 'q' query parameter is required." });
+        // The original API returns an 'error' key for failures
+        return res.status(400).json({ error: "Query parameter ?q=... is required" });
     }
 
     console.log(`POST /qa - Received question: "${q}"`);
 
-    let answer = "I'm sorry, I don't have an answer for that. I am a simple dummy bot. Please try asking about the TA or the late submission penalty.";
+    let answer = "I don't know. I am a simple dummy bot. Please try asking about the TA or the late submission penalty.";
 
-    // Simple logic to answer questions from your report's screenshot
     const question = q.toLowerCase();
     if (question.includes('ta of this course')) {
         answer = "Jenny (Email: jennymax@vt.edu) is the GTA (Graduate Teaching Assistant) of this course. Note: GTA is often used interchangeably with TA, but technically GTA stands for Graduate Teaching Assistant.";
@@ -117,9 +112,8 @@ app.post('/qa', (req, res) => {
         answer = "Late submissions are penalized by 5% project points for every 12 hours late, up to a maximum of 48 hours late. Project submissions that are 48+ hours past the deadline are not accepted unless explicit permission is given by the instructor.";
     }
 
-    // The original API's response format isn't specified, so we'll send the answer as a simple text response.
-    // You can wrap it in a JSON object if your frontend expects that, e.g., res.json({ answer: answer });
-    res.status(200).send(answer);
+    // Respond with a JSON object containing the 'answer' key, matching the original API.
+    res.status(200).json({ answer: answer });
 });
 
 
@@ -131,4 +125,3 @@ app.listen(PORT, () => {
     console.log(`  POST http://localhost:${PORT}/uploadTranscript?lectureTitle=YourTitle`);
     console.log(`  POST http://localhost:${PORT}/qa?q=YourQuestion`);
 });
-
