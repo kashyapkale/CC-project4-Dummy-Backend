@@ -30,22 +30,22 @@ app.use(express.json());
 let lectures = [
     {
         lecture_id: "10e51729-b2ae-489a-b88e-206e898fab41",
-        title: "CloudLecture V8",
+        title: "AWS Serverless",
         notes: "https://example.com/notes/cloud-lecture-v8.txt"
     },
     {
         lecture_id: "139c2798-2c3b-486a-9113-af9fcf13841c",
-        title: "cloudLecture4",
+        title: "Edge Computing",
         notes: "https://example.com/notes/cloud-lecture-4.txt"
     },
     {
         lecture_id: "a2b1e8d0-5c6f-4a7b-9d8e-1f2a3b4c5d6e",
-        title: "Pokemon TestLecture V3",
+        title: "Networking Basics",
         notes: "https://example.com/notes/pokemon-lecture-v3.txt"
     },
     {
         lecture_id: "f1e2d3c4-b5a6-7890-1234-567890abcdef",
-        title: "Pokemon TestLecture V7",
+        title: "Cost Estimation and Optimisation of Cloud Services",
         notes: "https://example.com/notes/pokemon-lecture-v7.txt"
     },
 ];
